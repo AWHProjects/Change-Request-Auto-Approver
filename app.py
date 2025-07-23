@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
@@ -8,13 +7,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///change_requests.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-db = SQLAlchemy(app)
+# Import db from models and initialize with app
+from models import db, ChangeRequest, ApprovalRule, AuditLog
+db.init_app(app)
 
 # Create upload directory if it doesn't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Import models and routes after db initialization
-from models import ChangeRequest, ApprovalRule, AuditLog
+# Import routes after db initialization
 from routes import *
 
 if __name__ == '__main__':

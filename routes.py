@@ -1,6 +1,6 @@
 from flask import render_template, request, jsonify, redirect, url_for, flash
-from app import app, db
-from models import ChangeRequest, ApprovalRule, AuditLog, ChangeRequestStatus, ChangeRequestPriority, ChangeRequestType
+from app import app
+from models import ChangeRequest, ApprovalRule, AuditLog, ChangeRequestStatus, ChangeRequestPriority, ChangeRequestType, db
 from approval_engine import AutoApprovalEngine
 from werkzeug.utils import secure_filename
 import pandas as pd

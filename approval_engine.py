@@ -1,6 +1,5 @@
 import json
-from models import ChangeRequest, ApprovalRule, AuditLog, ChangeRequestStatus
-from app import db
+from models import ChangeRequest, ApprovalRule, AuditLog, ChangeRequestStatus, db
 from datetime import datetime
 
 class AutoApprovalEngine:

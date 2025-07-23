@@ -1,6 +1,8 @@
-from app import db
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from enum import Enum
+
+db = SQLAlchemy()
 
 class ChangeRequestStatus(Enum):
     PENDING = "pending"

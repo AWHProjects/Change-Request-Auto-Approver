@@ -1,6 +1,5 @@
 import json
-from models import ApprovalRule
-from app import db
+from models import ApprovalRule, db
 
 def initialize_default_rules():
     """Initialize default approval rules for the system."""

@@ -18,6 +18,51 @@ A comprehensive ITIL-compliant change management system that automatically evalu
 - **Responsive UI**: Modern Bootstrap-based interface
 - **API Integration**: RESTful endpoints for external system integration
 
+## 📸 Application Screenshots
+
+### Dashboard Overview
+The main dashboard provides a comprehensive overview of the change management system:
+
+![Dashboard](screenshots/dashboard.png)
+
+**Features shown:**
+- **Statistics Cards**: Real-time counts of Total Requests, Auto Approved, Manager Review, and Pending requests
+- **Navigation Sidebar**: Easy access to all system functions including Submit Request, All Requests, Manager Review, Upload CSV, and Approval Rules
+- **Recent Requests**: Table showing the most recent change requests with status indicators
+- **Quick Actions**: Direct buttons for common tasks like submitting new requests and accessing manager review
+- **System Information**: Shows system status including Auto-Approval Engine (Active), ITIL Compliance (Enabled), Audit Logging (Enabled), and API endpoint information
+
+### Submit Change Request Form
+The request submission form provides a comprehensive interface for creating new change requests:
+
+![Submit Request Form](screenshots/submit-request.png)
+
+**Features shown:**
+- **Comprehensive Form**: All required fields for change request details including title, description, requester information, change type, priority, and impact assessments
+- **Auto-Approval Criteria**: Right sidebar showing the criteria used for automatic approval decisions
+- **Smart Validation**: Form validation and user guidance
+- **Tips Section**: Helpful tips for users to improve their request quality
+- **Impact Assessment**: Dropdown selections for business impact, user impact, and financial impact
+- **Systems Tracking**: Field to list all affected systems
+
+### Manager Review Queue
+The manager review interface shows requests that require manual approval:
+
+![Manager Review Queue](screenshots/manager-review.png)
+
+**Features shown:**
+- **Clean Interface**: Shows pending requests count and status
+- **Empty State**: Professional empty state when no requests are pending review
+- **Request Cards**: When populated, shows detailed request information with approve/reject actions
+- **Batch Processing**: Ability to review multiple requests efficiently
+- **Audit Integration**: All manager actions are logged for compliance
+
+### Key Interface Elements
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Status Indicators**: Color-coded badges for different request statuses (Pending, Auto-Approved, Manager Review, Approved, Rejected)
+- **Priority Levels**: Visual indicators for Low, Medium, High, and Critical priority requests
+- **Professional Styling**: Clean, modern Bootstrap-based design suitable for enterprise environments
+
 ## 📋 Requirements
 
 - Python 3.8+
