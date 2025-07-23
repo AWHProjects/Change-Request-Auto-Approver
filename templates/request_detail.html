@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}{{ request.request_id }} - Change Request Auto-Approver{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ request.request_id }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <span class="badge bg-{{ 'success' if request.status.value in ['auto_approved', 'approved'] else 'warning' if request.status.value == 'manager_review' else 'danger' if request.status.value == 'rejected' else 'secondary' }} fs-6">
+            {{ request.status.value.replace('_', ' ').title() }}
+        </span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Request Details -->
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Request Details</h6>
+            </div>
+            <div class="card-body">
+                <h5>{{ request.title }}</h5>
+                <p class="text-muted">{{ request.description }}</p>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Requester:</strong> {{ request.requester_name }}<br>
+                        <strong>Email:</strong> {{ request.requester_email }}<br>
+                        <strong>Department:</strong> {{ request.department }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Change Type:</strong> {{ request.change_type.value.title() }}<br>
+                        <strong>Priority:</strong> 
+                        <span class="badge bg-{{ 'danger' if request.priority.value == 'critical' else 'warning' if request.priority.value == 'high' else 'info' if request.priority.value == 'medium' else 'success' }}">
+                            {{ request.priority.value.title() }}
+                        </span><br>
+                        <strong>Created:</strong> {{ request.created_at.strftime('%Y-%m-%d %H:%M') }}
+                    </div>
+                </div>
+
+                {% if request.systems_affected %}
+                <div class="mb-3">
+                    <strong>Systems Affected:</strong>
+                    <div class="mt-1">
+                        {% for system in request.systems_affected|from_json %}
+                        <span class="badge bg-light text-dark me-1">{{ system }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Estimated Downtime:</strong><br>
+                        {{ request.estimated_downtime }} minutes
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Business Impact:</strong><br>
+                        {{ request.business_impact.title() }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>User Impact:</strong><br>
+                        {{ request.user_impact.title() }}
+                    </div>
+                </div>
+
+                {% if request.financial_impact %}
+                <div class="mb-3">
+                    <strong>Financial Impact:</strong> ${{ request.financial_impact }}
+                </div>
+                {% endif %}
+
+                {% if request.maintenance_window %}
+                <div class="mb-3">
+                    <strong>Maintenance Window:</strong> {{ request.maintenance_window }}
+                </div>
+                {% endif %}
+
+                {% if request.rollback_plan %}
+                <div class="mb-3">
+                    <strong>Rollback Plan:</strong>
+                    <p class="mt-1">{{ request.rollback_plan }}</p>
+                </div>
+                {% endif %}
+
+                {% if request.testing_plan %}
+                <div class="mb-3">
+                    <strong>Testing Plan:</strong>
+                    <p class="mt-1">{{ request.testing_plan }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Audit Trail -->
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Audit Trail</h6>
+            </div>
+            <div class="card-body">
+                {% if audit_logs %}
+                <div class="timeline">
+                    {% for log in audit_logs %}
+                    <div class="timeline-item mb-3">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-{{ 'check-circle text-success' if log.action == 'approved' else 'times-circle text-danger' if log.action == 'rejected' else 'plus-circle text-info' if log.action == 'created' else 'clock text-warning' }}"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">{{ log.action.replace('_', ' ').title() }}</h6>
+                                <p class="text-muted mb-1">by {{ log.performed_by }}</p>
+                                <small class="text-muted">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                                {% if log.details %}
+                                <div class="mt-2">
+                                    <small class="text-muted">{{ log.details }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No audit logs available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Approval Score -->
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Auto-Approval Analysis</h6>
+            </div>
+            <div class="card-body">
+                {% if request.auto_approval_score %}
+                <div class="text-center mb-3">
+                    <div class="h2 mb-0 font-weight-bold text-{{ 'success' if request.auto_approval_score >= 80 else 'warning' if request.auto_approval_score >= 60 else 'danger' }}">
+                        {{ "%.1f"|format(request.auto_approval_score) }}%
+                    </div>
+                    <div class="text-xs font-weight-bold text-uppercase text-muted">Approval Score</div>
+                </div>
+                <div class="progress mb-3">
+                    <div class="progress-bar bg-{{ 'success' if request.auto_approval_score >= 80 else 'warning' if request.auto_approval_score >= 60 else 'danger' }}" 
+                         role="progressbar" style="width: {{ request.auto_approval_score }}%"></div>
+                </div>
+                {% endif %}
+                
+                {% if request.approval_reason %}
+                <p class="text-sm"><strong>Reason:</strong> {{ request.approval_reason }}</p>
+                {% endif %}
+
+                {% if request.approved_by %}
+                <p class="text-sm"><strong>Approved By:</strong> {{ request.approved_by }}</p>
+                {% endif %}
+
+                {% if request.approved_at %}
+                <p class="text-sm"><strong>Approved At:</strong> {{ request.approved_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Stats</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="h5 mb-0 font-weight-bold text-primary">{{ request.systems_count }}</div>
+                        <div class="text-xs font-weight-bold text-uppercase text-muted">Systems</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="h5 mb-0 font-weight-bold text-warning">{{ request.estimated_downtime }}</div>
+                        <div class="text-xs font-weight-bold text-uppercase text-muted">Minutes</div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="h5 mb-0 font-weight-bold text-success">${{ request.financial_impact }}</div>
+                        <div class="text-xs font-weight-bold text-uppercase text-muted">Impact</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="h5 mb-0 font-weight-bold text-info">{{ request.change_type.value.title() }}</div>
+                        <div class="text-xs font-weight-bold text-uppercase text-muted">Type</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('list_requests') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to All Requests
+    </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Add custom filter for JSON parsing in Jinja2
+app.jinja_env.filters['from_json'] = function(value) {
+    try {
+        return JSON.parse(value);
+    } catch (e) {
+        return [];
+    }
+};
+</script>
+{% endblock %}

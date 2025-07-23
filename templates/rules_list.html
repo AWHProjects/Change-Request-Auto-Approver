@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Approval Rules - Change Request Auto-Approver{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Approval Rules</h1>
+</div>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h6 class="m-0 font-weight-bold text-primary">Active Approval Rules</h6>
+    </div>
+    <div class="card-body">
+        {% if rules %}
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Rule Name</th>
+                        <th>Description</th>
+                        <th>Max Systems</th>
+                        <th>Max Downtime</th>
+                        <th>Max Financial Impact</th>
+                        <th>Threshold</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rule in rules %}
+                    <tr>
+                        <td><strong>{{ rule.name }}</strong></td>
+                        <td>{{ rule.description[:60] }}{% if rule.description|length > 60 %}...{% endif %}</td>
+                        <td>{{ rule.max_systems_affected or 'N/A' }}</td>
+                        <td>{{ rule.max_downtime_minutes or 'N/A' }} min</td>
+                        <td>${{ rule.max_financial_impact or 'N/A' }}</td>
+                        <td>{{ rule.auto_approve_threshold }}%</td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if rule.is_active else 'secondary' }}">
+                                {{ 'Active' if rule.is_active else 'Inactive' }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-cogs fa-3x text-gray-300 mb-3"></i>
+            <p class="text-muted">No approval rules configured.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-4">
+    <div class="card shadow">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-info">How Approval Rules Work</h6>
+        </div>
+        <div class="card-body">
+            <p>The auto-approval engine evaluates each change request against all active rules:</p>
+            <ul>
+                <li><strong>Scoring:</strong> Each rule assigns a score (0-100%) based on how well the request meets the criteria</li>
+                <li><strong>Weighting:</strong> Rule scores are weighted and combined to create a final approval score</li>
+                <li><strong>Threshold:</strong> If the final score meets or exceeds the highest threshold among rules, the request is auto-approved</li>
+                <li><strong>Review Queue:</strong> Requests below the threshold are sent to manager review</li>
+            </ul>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>ITIL Compliance:</strong> These rules follow ITIL best practices for change management, 
+                ensuring proper risk assessment and approval workflows.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Request - Change Request Auto-Approver{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Submit Change Request</h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Change Request Form</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="change_type" class="form-label">Change Type *</label>
+                                <select class="form-select" id="change_type" name="change_type" required>
+                                    <option value="">Select change type</option>
+                                    <option value="standard">Standard</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="emergency">Emergency</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description *</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="requester_name" class="form-label">Requester Name *</label>
+                                <input type="text" class="form-control" id="requester_name" name="requester_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="requester_email" class="form-label">Requester Email *</label>
+                                <input type="email" class="form-control" id="requester_email" name="requester_email" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="department" class="form-label">Department *</label>
+                                <input type="text" class="form-control" id="department" name="department" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="priority" class="form-label">Priority *</label>
+                                <select class="form-select" id="priority" name="priority" required>
+                                    <option value="">Select priority</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="systems_affected" class="form-label">Systems Affected</label>
+                        <input type="text" class="form-control" id="systems_affected" name="systems_affected" 
+                               placeholder="Enter systems separated by commas">
+                        <div class="form-text">List all systems that will be affected by this change</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="estimated_downtime" class="form-label">Estimated Downtime (minutes)</label>
+                                <input type="number" class="form-control" id="estimated_downtime" name="estimated_downtime" min="0" value="0">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="business_impact" class="form-label">Business Impact</label>
+                                <select class="form-select" id="business_impact" name="business_impact">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="user_impact" class="form-label">User Impact</label>
+                                <select class="form-select" id="user_impact" name="user_impact">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="financial_impact" class="form-label">Financial Impact ($)</label>
+                                <input type="number" class="form-control" id="financial_impact" name="financial_impact" min="0" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="maintenance_window" class="form-label">Maintenance Window</label>
+                                <input type="text" class="form-control" id="maintenance_window" name="maintenance_window" 
+                                       placeholder="e.g., Saturday 2AM-4AM">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="rollback_plan" class="form-label">Rollback Plan</label>
+                        <textarea class="form-control" id="rollback_plan" name="rollback_plan" rows="3" 
+                                  placeholder="Describe how to rollback if the change fails"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="testing_plan" class="form-label">Testing Plan</label>
+                        <textarea class="form-control" id="testing_plan" name="testing_plan" rows="3" 
+                                  placeholder="Describe how the change will be tested"></textarea>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-info">Auto-Approval Criteria</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-sm">Your request will be automatically evaluated against these criteria:</p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> <strong>Systems Affected:</strong> ≤ 3 systems</li>
+                    <li><i class="fas fa-check text-success"></i> <strong>Downtime:</strong> ≤ 60 minutes</li>
+                    <li><i class="fas fa-check text-success"></i> <strong>Financial Impact:</strong> ≤ $2,500</li>
+                    <li><i class="fas fa-check text-success"></i> <strong>Business Impact:</strong> Low to Medium</li>
+                    <li><i class="fas fa-check text-success"></i> <strong>User Impact:</strong> Low to Medium</li>
+                </ul>
+                <hr>
+                <p class="text-sm text-muted">
+                    Requests that don't meet auto-approval criteria will be queued for manager review.
+                </p>
+            </div>
+        </div>
+
+        <div class="card shadow mt-3">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-warning">Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled text-sm">
+                    <li><i class="fas fa-lightbulb text-warning"></i> Provide detailed descriptions</li>
+                    <li><i class="fas fa-lightbulb text-warning"></i> Include comprehensive rollback plans</li>
+                    <li><i class="fas fa-lightbulb text-warning"></i> Specify exact maintenance windows</li>
+                    <li><i class="fas fa-lightbulb text-warning"></i> List all affected systems</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

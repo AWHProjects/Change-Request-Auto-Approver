@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Upload CSV - Change Request Auto-Approver{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Upload CSV File</h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">CSV Upload</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Select CSV File</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".csv" required>
+                        <div class="form-text">Upload a CSV file containing change requests</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Upload and Process</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-info">CSV Format</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-sm">Your CSV file should include these columns:</p>
+                <ul class="list-unstyled text-sm">
+                    <li><strong>title</strong> - Request title</li>
+                    <li><strong>description</strong> - Detailed description</li>
+                    <li><strong>requester_name</strong> - Name of requester</li>
+                    <li><strong>requester_email</strong> - Email address</li>
+                    <li><strong>department</strong> - Department name</li>
+                    <li><strong>change_type</strong> - standard/normal/emergency</li>
+                    <li><strong>priority</strong> - low/medium/high/critical</li>
+                    <li><strong>systems_affected</strong> - Comma-separated list</li>
+                    <li><strong>estimated_downtime</strong> - Minutes (number)</li>
+                    <li><strong>business_impact</strong> - low/medium/high</li>
+                    <li><strong>user_impact</strong> - low/medium/high</li>
+                    <li><strong>financial_impact</strong> - Dollar amount</li>
+                    <li><strong>rollback_plan</strong> - Rollback description</li>
+                    <li><strong>testing_plan</strong> - Testing description</li>
+                    <li><strong>maintenance_window</strong> - Time window</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow mt-3">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-success">Sample Data</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-sm">Need sample data? Generate a sample CSV file:</p>
+                <div class="d-grid">
+                    <button onclick="generateSampleCSV()" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-download"></i> Generate Sample CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateSampleCSV() {
+    const csvContent = `title,description,requester_name,requester_email,department,change_type,priority,systems_affected,estimated_downtime,business_impact,user_impact,financial_impact,rollback_plan,testing_plan,maintenance_window
+"Update database schema","Add new index to improve query performance","John Smith","john.smith@company.com","IT","standard","medium","Database Server,Application Server",15,"low","low",500,"Drop the new index if issues occur","Run performance tests in staging environment","Saturday 2AM-4AM"
+"Security patch deployment","Deploy critical security patches to web servers","Sarah Johnson","sarah.johnson@company.com","Security","emergency","critical","Web Server 1,Web Server 2,Load Balancer",45,"medium","medium",0,"Restore from backup if patches cause issues","Verify all services after patch deployment","Immediate"`;
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'sample_change_requests.csv';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+}
+</script>
+{% endblock %}

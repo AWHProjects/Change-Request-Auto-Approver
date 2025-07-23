@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Change Request Auto-Approver{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stats border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Requests</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stats success border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Auto Approved</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.auto_approved }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stats warning border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Manager Review</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.manager_review }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-stats border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Pending</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.pending }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Requests -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Recent Change Requests</h6>
+    </div>
+    <div class="card-body">
+        {% if recent_requests %}
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Title</th>
+                        <th>Requester</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in recent_requests %}
+                    <tr>
+                        <td>{{ request.request_id }}</td>
+                        <td>{{ request.title[:50] }}{% if request.title|length > 50 %}...{% endif %}</td>
+                        <td>{{ request.requester_name }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'danger' if request.priority.value == 'critical' else 'warning' if request.priority.value == 'high' else 'info' if request.priority.value == 'medium' else 'success' }}">
+                                {{ request.priority.value.title() }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if request.status.value in ['auto_approved', 'approved'] else 'warning' if request.status.value == 'manager_review' else 'danger' if request.status.value == 'rejected' else 'secondary' }}">
+                                {{ request.status.value.replace('_', ' ').title() }}
+                            </span>
+                        </td>
+                        <td>{{ request.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <a href="{{ url_for('view_request', request_id=request.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-inbox fa-3x text-gray-300 mb-3"></i>
+            <p class="text-muted">No change requests found. <a href="{{ url_for('submit_request') }}">Submit your first request</a>.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('submit_request') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Submit New Request
+                    </a>
+                    <a href="{{ url_for('upload_csv') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-upload"></i> Upload CSV File
+                    </a>
+                    <a href="{{ url_for('manager_review') }}" class="btn btn-outline-warning">
+                        <i class="fas fa-clipboard-check"></i> Manager Review Queue
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">System Information</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Auto-Approval Engine:</strong> Active</p>
+                <p><strong>ITIL Compliance:</strong> Enabled</p>
+                <p><strong>Audit Logging:</strong> Enabled</p>
+                <p><strong>API Endpoint:</strong> <code>/api/requests</code></p>
+                <small class="text-muted">
+                    This system follows ITIL best practices for change management,
+                    automatically approving low-risk changes and routing complex changes
+                    to manager review.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

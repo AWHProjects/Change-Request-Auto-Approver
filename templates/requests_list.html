@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}All Requests - Change Request Auto-Approver{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">All Change Requests</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('submit_request') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Request
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All Statuses</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="auto_approved" {% if status_filter == 'auto_approved' %}selected{% endif %}>Auto Approved</option>
+                    <option value="manager_review" {% if status_filter == 'manager_review' %}selected{% endif %}>Manager Review</option>
+                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="priority" class="form-label">Priority</label>
+                <select class="form-select" id="priority" name="priority">
+                    <option value="">All Priorities</option>
+                    <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>Low</option>
+                    <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>Medium</option>
+                    <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>High</option>
+                    <option value="critical" {% if priority_filter == 'critical' %}selected{% endif %}>Critical</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary me-2">Filter</button>
+                <a href="{{ url_for('list_requests') }}" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Requests Table -->
+<div class="card shadow">
+    <div class="card-body">
+        {% if requests %}
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Title</th>
+                        <th>Requester</th>
+                        <th>Department</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                    <tr>
+                        <td>{{ request.request_id }}</td>
+                        <td>{{ request.title[:40] }}{% if request.title|length > 40 %}...{% endif %}</td>
+                        <td>{{ request.requester_name }}</td>
+                        <td>{{ request.department }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'danger' if request.priority.value == 'critical' else 'warning' if request.priority.value == 'high' else 'info' if request.priority.value == 'medium' else 'success' }}">
+                                {{ request.priority.value.title() }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if request.status.value in ['auto_approved', 'approved'] else 'warning' if request.status.value == 'manager_review' else 'danger' if request.status.value == 'rejected' else 'secondary' }}">
+                                {{ request.status.value.replace('_', ' ').title() }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if request.auto_approval_score %}
+                                {{ "%.1f"|format(request.auto_approval_score) }}%
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ request.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <a href="{{ url_for('view_request', request_id=request.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-search fa-3x text-gray-300 mb-3"></i>
+            <h4 class="text-gray-500">No requests found</h4>
+            <p class="text-muted">
+                {% if status_filter or priority_filter %}
+                    No requests match your current filters. <a href="{{ url_for('list_requests') }}">Clear filters</a> to see all requests.
+                {% else %}
+                    No change requests have been submitted yet. <a href="{{ url_for('submit_request') }}">Submit the first request</a>.
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

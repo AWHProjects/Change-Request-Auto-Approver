@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Manager Review - Change Request Auto-Approver{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Manager Review Queue</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <span class="badge bg-warning fs-6">{{ requests|length }} requests pending</span>
+    </div>
+</div>
+
+{% if requests %}
+<div class="row">
+    {% for request in requests %}
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">{{ request.request_id }}</h6>
+                <span class="badge bg-{{ 'danger' if request.priority.value == 'critical' else 'warning' if request.priority.value == 'high' else 'info' if request.priority.value == 'medium' else 'success' }}">
+                    {{ request.priority.value.title() }}
+                </span>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">{{ request.title }}</h6>
+                <p class="card-text text-muted">{{ request.description[:100] }}{% if request.description|length > 100 %}...{% endif %}</p>
+                
+                <div class="row text-sm mb-3">
+                    <div class="col-6">
+                        <strong>Requester:</strong><br>
+                        {{ request.requester_name }}<br>
+                        <small class="text-muted">{{ request.department }}</small>
+                    </div>
+                    <div class="col-6">
+                        <strong>Impact:</strong><br>
+                        Business: {{ request.business_impact.title() }}<br>
+                        User: {{ request.user_impact.title() }}
+                    </div>
+                </div>
+
+                <div class="row text-sm mb-3">
+                    <div class="col-6">
+                        <strong>Systems:</strong> {{ request.systems_count }}<br>
+                        <strong>Downtime:</strong> {{ request.estimated_downtime }}min
+                    </div>
+                    <div class="col-6">
+                        <strong>Financial:</strong> ${{ request.financial_impact }}<br>
+                        <strong>Score:</strong> {{ "%.1f"|format(request.auto_approval_score) }}%
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted">
+                        <strong>Submitted:</strong> {{ request.created_at.strftime('%Y-%m-%d %H:%M') }}
+                    </small>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('view_request', request_id=request.id) }}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    <div>
+                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal{{ request.id }}">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal{{ request.id }}">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve Modal -->
+    <div class="modal fade" id="approveModal{{ request.id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Approve Change Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{{ url_for('approve_request', request_id=request.id) }}">
+                    <div class="modal-body">
+                        <p>Are you sure you want to approve <strong>{{ request.request_id }}</strong>?</p>
+                        <div class="mb-3">
+                            <label for="manager_name{{ request.id }}" class="form-label">Manager Name</label>
+                            <input type="text" class="form-control" id="manager_name{{ request.id }}" name="manager_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comments{{ request.id }}" class="form-label">Comments (Optional)</label>
+                            <textarea class="form-control" id="comments{{ request.id }}" name="comments" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Approve Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div class="modal fade" id="rejectModal{{ request.id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reject Change Request</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{{ url_for('reject_request', request_id=request.id) }}">
+                    <div class="modal-body">
+                        <p>Are you sure you want to reject <strong>{{ request.request_id }}</strong>?</p>
+                        <div class="mb-3">
+                            <label for="manager_name_reject{{ request.id }}" class="form-label">Manager Name</label>
+                            <input type="text" class="form-control" id="manager_name_reject{{ request.id }}" name="manager_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reason{{ request.id }}" class="form-label">Rejection Reason *</label>
+                            <textarea class="form-control" id="reason{{ request.id }}" name="reason" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Reject Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="fas fa-clipboard-check fa-4x text-gray-300 mb-4"></i>
+    <h4 class="text-gray-500">No requests pending review</h4>
+    <p class="text-muted">All change requests have been processed or auto-approved.</p>
+    <a href="{{ url_for('list_requests') }}" class="btn btn-primary">View All Requests</a>
+</div>
+{% endif %}
+{% endblock %}
