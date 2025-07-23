@@ -18,14 +18,12 @@ A comprehensive ITIL-compliant change management system that automatically evalu
 - **Responsive UI**: Modern Bootstrap-based interface
 - **API Integration**: RESTful endpoints for external system integration
 
-## 📸 Application Screenshots
+## 📸 Application Interface
 
 ### Dashboard Overview
-The main dashboard provides a comprehensive overview of the change management system:
+The main dashboard provides a comprehensive overview of the change management system with:
 
-![Dashboard](screenshots/dashboard.png)
-
-**Features shown:**
+**Key Features:**
 - **Statistics Cards**: Real-time counts of Total Requests, Auto Approved, Manager Review, and Pending requests
 - **Navigation Sidebar**: Easy access to all system functions including Submit Request, All Requests, Manager Review, Upload CSV, and Approval Rules
 - **Recent Requests**: Table showing the most recent change requests with status indicators
@@ -33,11 +31,9 @@ The main dashboard provides a comprehensive overview of the change management sy
 - **System Information**: Shows system status including Auto-Approval Engine (Active), ITIL Compliance (Enabled), Audit Logging (Enabled), and API endpoint information
 
 ### Submit Change Request Form
-The request submission form provides a comprehensive interface for creating new change requests:
+The request submission form provides a comprehensive interface for creating new change requests with:
 
-![Submit Request Form](screenshots/submit-request.png)
-
-**Features shown:**
+**Key Features:**
 - **Comprehensive Form**: All required fields for change request details including title, description, requester information, change type, priority, and impact assessments
 - **Auto-Approval Criteria**: Right sidebar showing the criteria used for automatic approval decisions
 - **Smart Validation**: Form validation and user guidance
@@ -46,22 +42,22 @@ The request submission form provides a comprehensive interface for creating new 
 - **Systems Tracking**: Field to list all affected systems
 
 ### Manager Review Queue
-The manager review interface shows requests that require manual approval:
+The manager review interface shows requests that require manual approval with:
 
-![Manager Review Queue](screenshots/manager-review.png)
-
-**Features shown:**
+**Key Features:**
 - **Clean Interface**: Shows pending requests count and status
 - **Empty State**: Professional empty state when no requests are pending review
 - **Request Cards**: When populated, shows detailed request information with approve/reject actions
 - **Batch Processing**: Ability to review multiple requests efficiently
 - **Audit Integration**: All manager actions are logged for compliance
 
-### Key Interface Elements
+### Interface Highlights
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
 - **Status Indicators**: Color-coded badges for different request statuses (Pending, Auto-Approved, Manager Review, Approved, Rejected)
 - **Priority Levels**: Visual indicators for Low, Medium, High, and Critical priority requests
 - **Professional Styling**: Clean, modern Bootstrap-based design suitable for enterprise environments
+
+> **Note**: To add screenshots to this documentation, place PNG files in the `screenshots/` directory and reference them in the README. The application runs on `http://localhost:5000` after following the installation instructions below.
 
 ## 📋 Requirements
 
