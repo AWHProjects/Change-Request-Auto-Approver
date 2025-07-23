@@ -57,8 +57,6 @@ The manager review interface shows requests that require manual approval with:
 - **Priority Levels**: Visual indicators for Low, Medium, High, and Critical priority requests
 - **Professional Styling**: Clean, modern Bootstrap-based design suitable for enterprise environments
 
-> **Note**: To add screenshots to this documentation, place PNG files in the `screenshots/` directory and reference them in the README. The application runs on `http://localhost:5000` after following the installation instructions below.
-
 ## 📋 Requirements
 
 - Python 3.8+
